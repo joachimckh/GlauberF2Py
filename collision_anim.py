@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-from glauber import sample_woods_saxon, find_collisions, Nuclei, calcPsi2Ecc2
+from utils.glauber import sample_woods_saxon, find_collisions, Nuclei, calcPsi2Ecc2
 
 
 def draw_psi2_plane(ax, psi2, zmin=-25, zmax=25, r=15):

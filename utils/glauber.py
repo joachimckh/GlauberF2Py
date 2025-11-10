@@ -1,4 +1,5 @@
 import numpy as np
+from utils import fwoodsax
 
 
 def sample_woods_saxon(A, R, a, dmin, V0 = 1.0): # we assume V0 = 1
@@ -63,6 +64,12 @@ class Nuclei:
 
   def sample_ws(self):
     self.coords = sample_woods_saxon(self.A, self.R, self.a, self.dmin)
+    tmp = np.array(self.coords)
+
+  def sample_fws(self):
+    self.coords = np.zeros((self.A, 3), 'f', order='F')
+    #fwoodsax.sampler.woods_saxon(self.R, self.a, self.dmin, self.coords)
+    fwoodsax.sampler.woods_saxon(self.R, self.a, self.dmin, self.coords, self.A)
 
   def __getitem__(self, index):
     return self.coords[index]
@@ -80,13 +87,12 @@ class Nuclei:
 
 def calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2):
   # collect wounded nucleons from both nuclei
-  A = nuc1[wounded1][:, :2] # check this
+  A = nuc1[wounded1][:, :2] 
   B = nuc2[wounded2][:, :2]
   P = np.vstack([A, B])
   if P.shape[0] == 0:
     return 0.0, 0.0
 
-  # recentre
   x = P[:,0] - np.mean(P[:,0])
   y = P[:,1] - np.mean(P[:,1])
 
@@ -96,7 +102,7 @@ def calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2):
 
   cos2 = np.sum(w * np.cos(2*phi))
   sin2 = np.sum(w * np.sin(2*phi))
-  r2   = np.sum(w)
+  r2 = np.sum(w)
 
   if r2 == 0:
     return 0.0, 0.0
@@ -107,7 +113,8 @@ def calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2):
   return eps2, psi2
 
 
-
+if __name__ == "__main__":
+  print(fwoodsax.sampler.woods_saxon.__doc__)
 
 
 

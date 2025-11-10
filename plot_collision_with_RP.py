@@ -14,9 +14,9 @@ def main():
   A=206 # nucleon number (
   b=9.0 # impact parameter (change to centrality at some point)
   nuc1 = Nuclei(A)
-  nuc1.sample_ws()
+  nuc1.sample_fws()
   nuc2 = Nuclei(A)
-  nuc2.sample_ws()
+  nuc2.sample_fws()
 
   #nuc1[:,1]+=b/4
   nuc2[:,1]+=b/2
