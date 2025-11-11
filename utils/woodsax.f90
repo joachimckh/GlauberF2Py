@@ -1,13 +1,17 @@
-module sampler
+module nucmath 
   implicit none
 contains
+
+real function pi()
+  implicit none
+  pi = 4.0 * atan(1.0)
+end function pi
 
 subroutine woods_saxon(A, R, d, dmin, coords)
   implicit none
   integer, intent(in) :: A
   real, intent(in) :: R, d, dmin
   real, intent(inout) :: coords(A, 3)
-  real, parameter :: pi = 3.141592653589793
   integer :: i, j
   real :: rr, costh, phi, x, y, z, p, u
   logical :: overlap
@@ -15,11 +19,11 @@ subroutine woods_saxon(A, R, d, dmin, coords)
   i = 1
   do while (i <= A)
     call random_number(rr)
-    rr = 15.0 * rr
+    rr = 15.0 * rr ! 15 fm max radisu
     call random_number(costh)
-    costh = 2.0 * costh - 1.0
+    costh = 2.0 * costh - 1.0 ! [-1, 1]
     call random_number(phi)
-    phi = 2.0 * pi * phi
+    phi = 2.0 * pi() * phi
     p = 1.0 / (1.0 + exp((rr - R) / d))
     call random_number(u)
     if (u < p) then
@@ -43,4 +47,12 @@ subroutine woods_saxon(A, R, d, dmin, coords)
   end do
 end subroutine woods_saxon
 
-end module sampler
+
+
+end module nucmath 
+
+
+
+
+
+
