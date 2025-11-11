@@ -8,6 +8,7 @@ from matplotlib.patches import Circle
 from matplotlib.patches import Ellipse
 
 from utils.glauber import sample_woods_saxon, find_collisions, Nuclei, calcPsi2Ecc2
+from utils import nucphys 
 
 def main():
   np.random.seed(11)
@@ -23,7 +24,12 @@ def main():
   nuc1[:,0]-=b/2
   nuc2[:,0]+=b/2
 
-  wounded1, wounded2, _ = find_collisions(nuc1, nuc2)
+  wounded1 = np.zeros(A, 'f', order='F') 
+  wounded2 = np.zeros(A, 'f', order='F') 
+  nucphys.nucutils.find_collisions(nuc1.coords,nuc2.coords, 10.0, wounded1, wounded2, A) 
+  wounded1 = wounded1.astype(bool)
+  wounded2 = wounded2.astype(bool)
+  #wounded1, wounded2, _ = find_collisions(nuc1, nuc2)
   eps2, psi2 = calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2)
 
   f = plt.figure(figsize=(6,6))
@@ -49,7 +55,6 @@ def main():
   plt.plot([cx - L*np.cos(psi2), cx + L*np.cos(psi2)],
            [cy - L*np.sin(psi2), cy + L*np.sin(psi2)],
            color='black', lw=2, label=r'$\Psi_2$')
-
 
 
   plt.xlabel('x [fm]')
@@ -78,6 +83,10 @@ def main():
   circle2 = Circle((c2x, c2y), r_nucleus, edgecolor='red',alpha=0.5, facecolor='none', lw=1., ls='-')
   plt.gca().add_patch(circle1)
   plt.gca().add_patch(circle2)
+  
+ 
+  plt.xlim(-15,15)
+  plt.ylim(-15,15)
 
 
   plt.show()

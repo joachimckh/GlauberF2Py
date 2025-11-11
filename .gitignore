@@ -206,5 +206,8 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-
+# vscode
 .DS_Store
+# fortran binaries
+*.o
+*.mod

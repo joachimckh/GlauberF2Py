@@ -1,5 +1,5 @@
 import numpy as np
-from utils import fwoodsax
+from utils import nucphys 
 
 
 def sample_woods_saxon(A, R, a, dmin, V0 = 1.0): # we assume V0 = 1
@@ -68,8 +68,8 @@ class Nuclei:
 
   def sample_fws(self):
     self.coords = np.zeros((self.A, 3), 'f', order='F')
-    #fwoodsax.sampler.woods_saxon(self.R, self.a, self.dmin, self.coords)
-    fwoodsax.sampler.woods_saxon(self.R, self.a, self.dmin, self.coords, self.A)
+    #fwoodsax.nucmath.woods_saxon(self.R, self.a, self.dmin, self.coords)
+    nucphys.nucmath.woods_saxon(self.R, self.a, self.dmin, self.coords, self.A)
 
   def __getitem__(self, index):
     return self.coords[index]
@@ -114,7 +114,7 @@ def calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2):
 
 
 if __name__ == "__main__":
-  print(fwoodsax.sampler.woods_saxon.__doc__)
+  print(nucphys.nucmath.woods_saxon.__doc__)
 
 
 
