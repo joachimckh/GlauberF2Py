@@ -47,6 +47,72 @@ subroutine woods_saxon(A, R, d, dmin, coords)
   end do
 end subroutine woods_saxon
 
+subroutine calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2, A, eps2, psi2)
+  implicit none
+  integer, intent(in) :: A
+  real, intent(in) :: nuc1(A,3), nuc2(A,3)
+  real, intent(in) :: wounded1(A), wounded2(A)
+  real, intent(out) :: eps2, psi2
+  real, allocatable :: P(:,:)
+  real, allocatable :: x(:), y(:), r(:), phi(:), w(:)
+  real :: cos2, sin2, r2, meanx, meany
+  integer :: i, n
+
+  n = sum(wounded1) + sum(wounded2)
+  if (n == 0) then
+    eps2 = 0.0
+    psi2 = 0.0
+    return
+  end if
+
+  allocate(P(n,2))
+  P = 0.0
+
+  n = 0
+  do i = 1, A
+    if (wounded1(i) > 0) then
+      n = n + 1
+      P(n,1) = nuc1(i,1)
+      P(n,2) = nuc1(i,2)
+    end if
+  end do
+  do i = 1, A
+    if (wounded2(i) > 0) then
+      n = n + 1
+      P(n,1) = nuc2(i,1)
+      P(n,2) = nuc2(i,2)
+    end if
+  end do
+
+  allocate(x(n), y(n), r(n), phi(n), w(n))
+
+  meanx = sum(P(:,1)) / real(n)
+  meany = sum(P(:,2)) / real(n)
+
+  x = P(:,1) - meanx
+  y = P(:,2) - meany
+
+  r = sqrt(x**2 + y**2)
+  phi = atan2(y, x)
+  w = r**2
+
+  cos2 = sum(w * cos(2.0 * phi))
+  sin2 = sum(w * sin(2.0 * phi))
+  r2 = sum(w)
+
+  if (r2 == 0.0) then
+    eps2 = 0.0
+    psi2 = 0.0
+    deallocate(P, x, y, r, phi, w)
+    return
+  end if
+
+  eps2 = sqrt(cos2**2 + sin2**2) / r2
+  psi2 = 0.5 * (atan2(sin2, cos2) + pi())
+
+  deallocate(P, x, y, r, phi, w)
+end subroutine calcPsi2Ecc2
+
 
 
 end module nucmath 
