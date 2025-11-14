@@ -17,7 +17,7 @@ The purpose of the simulation is not so much being correct, but rather to show h
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone
+    git clone
     cd glauber_simulation
     ```
 2. Install the required Python packages (they are present in the requirements.txt):
@@ -29,7 +29,7 @@ The purpose of the simulation is not so much being correct, but rather to show h
     pip install meson ninja
     ```
 
-4. Build the Fortran modules using f2py:
+4. Build the Fortran modules using f2py via the Makefile:
     ```bash
     make
     ```
