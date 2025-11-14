@@ -100,8 +100,7 @@ def update(frame):
   return sc1, sc2, scb
 
 ani=FuncAnimation(fig,update,frames=80,init_func=init,interval=100,blit=False)
-plt.show()
-
+ani.save("figures/glauber.gif", writer="pillow", fps=20)
 
 
 

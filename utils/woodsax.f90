@@ -108,7 +108,7 @@ subroutine calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2, A, eps2, psi2)
   end if
 
   eps2 = sqrt(cos2**2 + sin2**2) / r2
-  psi2 = 0.5 * (atan2(sin2, cos2) + pi())
+  psi2 = 1/2.0 * (atan2(sin2, cos2) + pi())
 
   deallocate(P, x, y, r, phi, w)
 end subroutine calcPsi2Ecc2

@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_res(par, cols, total_ecc2 = None, total_psi2 = None, ftype = "python"):
+def plot_res(par, cols, total_ecc2 = None, total_psi2 = None, ftype = "python", total_time = 0):
 
   f,axs = plt.subplots(1,2, figsize=(14,6))
   
@@ -15,6 +15,9 @@ def plot_res(par, cols, total_ecc2 = None, total_psi2 = None, ftype = "python"):
   ax.set_xlabel("Impact parameter b (fm)", fontsize=14)
   ax.set_ylabel("Number of collisions", fontsize=14)
   
+  ax.annotate("Algorithm: "+ftype, xy=(0.6,0.9), xycoords="axes fraction")
+  ax.annotate("N events: "+str(par.n_events), xy=(0.6,0.85), xycoords="axes fraction")
+  ax.annotate(f"Total time: {total_time:.2f} s", xy=(0.6,0.8), xycoords="axes fraction")
   
   ax = axs[1]
   

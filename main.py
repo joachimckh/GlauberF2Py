@@ -15,7 +15,7 @@ class setup:
   b_array: np.ndarray = field(default_factory=lambda: np.arange(0, 20, .05))
   #b_array: np.ndarray = field(default_factory=lambda: np.arange(0, 10, 1))
 
-  n_events: int = 50
+  n_events: int = 100
   # save_path: str = "glauber_results.npz"
 
 def main_purefort():
@@ -24,14 +24,16 @@ def main_purefort():
 
   time0 = time.time()
   cols = np.zeros((par.n_events,par.b_array.shape[0]), 'f', order='F')
-  ecc2 = np.zeros(par.b_array.shape, 'f', order='F')
-  psi2 = np.zeros(par.b_array.shape, 'f', order='F')
-  nucphys.simulation.proc(par.b_array, par.A, cols)#, psi1, ecc2)
+  ecc2 = np.zeros((par.n_events,par.b_array.shape[0]), 'f', order='F')
+  psi2 = np.zeros((par.n_events,par.b_array.shape[0]), 'f', order='F')
+  nucphys.simulation.proc(par.b_array, par.A, cols, psi2, ecc2)
   time1 = time.time()
   print(f"Pure fortran (sim) version took {time1 - time0:.2f} seconds")
 
   cols = cols.T
-  plot_res(par, cols, ftype="purefortran") 
+  ecc2 = ecc2.T
+  psi2 = psi2.T
+  plot_res(par, cols, psi2, ecc2, ftype="purefortran", total_time = time1 - time0)
 
 
 
@@ -80,7 +82,7 @@ def main_fortran():
   
   cols = np.array(cols)
   # print(cols.mean(axis=1))
-  plot_res(par, cols, total_ecc2, total_psi2, "f2py")
+  plot_res(par, cols, total_ecc2, total_psi2, "f2py", total_time = time1 - time0)
  
 
 
@@ -117,7 +119,7 @@ def main_py():
   print(f"\n py version took {time1 - time0:.2f} seconds")
   
   cols = np.array(cols)
-  plot_res(par, cols, total_ecc2, total_psi2)
+  plot_res(par, cols, total_ecc2, total_psi2, total_time = time1 - time0)
   
 if __name__ == "__main__":
   arg_parser = argparse.ArgumentParser()
