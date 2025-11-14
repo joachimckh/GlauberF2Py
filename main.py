@@ -54,9 +54,9 @@ def main_fortran():
       sys.stdout.write(f"\r  Event {_+1}/{par.n_events} for b={b:.1f} fm")
       sys.stdout.flush()
       nuc1 = Nuclei(par.A)
-      nuc1.sample_ws()
+      nuc1.sample_fws()
       nuc2 = Nuclei(par.A)
-      nuc2.sample_ws()
+      nuc2.sample_fws()
       
       nuc1[:,0]-=b/2
       nuc2[:,0]+=b/2
