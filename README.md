@@ -40,7 +40,7 @@ Run the simulation script:
 python main.py --v <argument>
 ```
 The arguments supported are:
-- "python": runs the pure Python implementation. Without any arguments this is the default.
+- "py": runs the pure Python implementation. Without any arguments this is the default.
 - "f": runs the Fortran implementation via f2py. Simulation loop is still in python, but all the heavy numerical lifting is done in Fortran.
 - "pf": runs the pure Fortran implementation. The entire simulation loop is done in Fortran, and only the results are passed back to Python for visualization. This is still called via f2py.
 
@@ -80,5 +80,5 @@ The pure python code is quite clearly disadvantageous. With a total running time
 Going from the part fortran to almost fully implemented fortran code only gains a factor of ~1.2 in gain. This is of course without any parallelization. It is quite clear that the while loop for generating events is the slowest part of the code in python, second is the collision finder. From there on, things can be optimized, but a significant gain in performance is unlikely to be achieved. The interesting part is also that since for the generator we are required to do a while loop, no vectorization can be done, and as such fortran or any other low level language is really required to increase the computational performance. 
 
 ## References
-[1] https://arxiv.org/abs/nucl-ex/0701025 
+[1] https://arxiv.org/abs/nucl-ex/0701025 \
 [2] https://tglaubermc.hepforge.org/
