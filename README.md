@@ -44,22 +44,20 @@ The arguments supported are:
 - "f": runs the Fortran implementation via f2py. Simulation loop is still in python, but all the heavy numerical lifting is done in Fortran.
 - "pf": runs the pure Fortran implementation. The entire simulation loop is done in Fortran, and only the results are passed back to Python for visualization. This is still called via f2py.
 
-There are also some plotting scripts which produces figures in the "figures" folder:
+There are also a plotting script which produces figures in the "figures" folder:
 ```bash
-python plot_collision_with_RP.py 
+python plot_collision.py --v <argument>
 ```
-Which plots a sample collision with the reaction plane and event plane indicated.
+The argument supported are:
+- "collision": plots a sample collision.
+- "animation": creates an animation of the collision process.
 
-```bash
-python collision_anim.py
-```
-Which produces a simple animation of a sample collision.
 
 The results from main.py are also saved as a plot in the "figures" folder, showing some different relevant observables, such as the number of participants as a function of impact parameter, but also the time the program took to run for the different implementations.
 
 ## Results
 Here are some example results from the simulation:
-![Sample Collision](figures/one_glauber_col_with_RP_Psi2.png)
+![Sample Collision](figures/collision.png)
 This was mainly done to verify that the Fortran implementation produces the same results as the Python one. As well as showing that the result of the simulation is somewhat sane.
 
 Animation of a sample collision:
@@ -75,8 +73,8 @@ Pure Fortran implementation:
 ![Pure Fortran Results](figures/nc_impb_algpurefortran.png)
 
 ## Performance
-Reported for a range of b-values (0,20) in 0.05 increment step with 100 events generated per b.
-The pure python code is quite clearly disadvantageous. With a total running time of 1809 seconds. Just changing the generator to fortran as well as the collision finder, speeds up the program by a factor of ~272, which is not surprising as python struggles where loops are required.
+Reported for a range of b-values (0,20) in 0.05 increment step with 50 events generated per b.
+The pure python code is quite clearly disadvantageous. With a total running time of 902.85 seconds. Just changing the generator to fortran as well as the collision finder, speeds up the program by a factor of ~276, which is not surprising as python struggles where loops are required.
 Going from the part fortran to almost fully implemented fortran code only gains a factor of ~1.2 in gain. This is of course without any parallelization. It is quite clear that the while loop for generating events is the slowest part of the code in python, second is the collision finder. From there on, things can be optimized, but a significant gain in performance is unlikely to be achieved. The interesting part is also that since for the generator we are required to do a while loop, no vectorization can be done, and as such fortran or any other low level language is really required to increase the computational performance. 
 
 ## References

@@ -15,7 +15,7 @@ class setup:
   b_array: np.ndarray = field(default_factory=lambda: np.arange(0, 20, .05))
   #b_array: np.ndarray = field(default_factory=lambda: np.arange(0, 10, 1))
 
-  n_events: int = 100
+  n_events: int = 50
   # save_path: str = "glauber_results.npz"
 
 def main_purefort():
