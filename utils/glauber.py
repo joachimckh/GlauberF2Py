@@ -1,38 +1,48 @@
 import numpy as np
 from utils import nucphys 
 
+#params au:
+# w = 0 # true for gold, I dont really use this, but keep for completeness
+def rho(r, R, a, w=0):
+  rho0 = 1 # nuclear density in the center (just use 1) 
+  num = 1 + w #w = w(r/R)=0 for gold (in general spherical nuclei) -> then rho decays to woods_saxon
+  denum = 1 + np.exp((r - R) / a)
+  return rho0 * num/denum
 
-def sample_woods_saxon(A, R, a, dmin, V0 = 1.0): # we assume V0 = 1
+def sample_f(r, R, a):
+  return 4*np.pi*r**2 * rho(r, R, a)
+
+def sample_woods_saxon(A, R, a, dmin):
   """
-  Sample A nucleon coordinates from a Woods-Saxon distribution
-  A: number of nucleons
-  R: radius parameter
-  a: diffuseness parameter
-  dmin: minimum inter-nucleon distance
-  Returns:
-    numpy array of coordinates of shape (A,3) (x,y,z)
+    Rejection sampling of nucleon coordinates from Woods-Saxon distribution
   """
-  coords=[]
-  while len(coords)<A:
-    rmax = 15.0 # should be enough for all nuclei
-    r = rmax*np.random.rand() 
-    costh = 2*np.random.rand()-1 # [-1,1] for cos(theta) 
-    phi = 2*np.pi*np.random.rand()
-    prob = V0/(1.0+np.exp((r-R)/a))
-    if np.random.rand()<prob:
-      x = r*np.sqrt(1-costh**2)*np.cos(phi)
-      y = r*np.sqrt(1-costh**2)*np.sin(phi)
-      z = r*costh
+  rmax = 15.0 # same as TGlauber
+
+  # r_grid = np.linspace(0.0, rmax, 1000)
+  # fmax = np.max(sample_f(r_grid, R, a))
+  fmax = 400.0 # precomputed maximum of sample_f for R=6.38, a=0.535, rmax=15.0 - should find a better way to do this
+
+  coords = []
+  while len(coords) < A:
+    r = rmax * np.random.rand()
+    costh = 2*np.random.rand() - 1 # [-1,1] for cos
+    phi = 2*np.pi * np.random.rand()
+    u = np.random.rand() * fmax
+    if u < sample_f(r, R, a):
+      s = np.sqrt(1 - costh*costh) # sin(theta)
+      x = r * s * np.cos(phi)
+      y = r * s * np.sin(phi)
+      z = r * costh
       ok = True
-      for (xx,yy,zz) in coords:
-        if (x-xx)**2+(y-yy)**2+(z-zz)**2<dmin**2:
+      for (xx, yy, zz) in coords:
+        if (x-xx)**2 + (y-yy)**2 + (z-zz)**2 < dmin**2:
           ok = False
           break
       if ok:
-        coords.append((x,y,z))
+        coords.append((x, y, z))
   return np.array(coords)
 
-def find_collisions(nuc1,nuc2,sig_nn=10.0):
+def find_collisions(nuc1,nuc2,sig_nn=10.0, doBC=False):
   """ 
   Find collisions between two sets of nucleons.
   nuc1, nuc2: arrays of shape (N,3) with nucleon coordinates
@@ -44,7 +54,8 @@ def find_collisions(nuc1,nuc2,sig_nn=10.0):
   rcut = np.sqrt(sig_nn/np.pi)
   part1 = np.zeros(len(nuc1),bool)
   part2 = np.zeros(len(nuc2),bool)
-  #bc = []
+  if doBC:
+    bc = []
   for i in range(len(nuc1)):
     for j in range(len(nuc2)):
       dx = nuc1[i,0]-nuc2[j,0]
@@ -53,21 +64,25 @@ def find_collisions(nuc1,nuc2,sig_nn=10.0):
       if dx*dx+dy*dy+dz*dz<rcut*rcut:
         part1[i] = True
         part2[j] = True
-        # bc.append(((nuc1[i,0]+nuc2[j,0])/2,
-        #            (nuc1[i,1]+nuc2[j,1])/2,
-        #            (nuc1[i,2]+nuc2[j,2])/2))
-  return part1, part2# , np.array(bc)
+        if doBC:
+          bc.append(((nuc1[i,0]+nuc2[j,0])/2,
+                   (nuc1[i,1]+nuc2[j,1])/2,
+                   (nuc1[i,2]+nuc2[j,2])/2))
+  if doBC:
+    return part1, part2, np.array(bc)
+  return part1, part2
+
 
 
 #Nucleus	Model	<r2>1/2 [fm]	c or a [fm]	z or ? [fm]	w	q-range	reference
 # 206Pb	FB	5.49	N/A	N/A	N/A	
 class Nuclei:
-  def __init__(self, A = 50):
+  def __init__(self, par):
     self.coords = None
-    self.A = A # nucleon number
-    self.R = 1.25 * A**(1/3) # R = r0 * A^(1/3), r0 = 1.25 fm
-    self.a = 0.5 # diffuseness parameter #found on wiki
-    self.dmin = 0.4 # minimum inter-nucleon distance
+    self.A = par.A # nucleon number
+    self.R = par.R #1.25 * A**(1/3) # R = r0 * A^(1/3), r0 = 1.25 fm
+    self.a = par.a #0.5 # diffuseness parameter #found on wiki
+    self.dmin = par.dmin # 0.4 # minimum inter-nucleon distance
 
   def sample_ws(self):
     self.coords = sample_woods_saxon(self.A, self.R, self.a, self.dmin)
@@ -90,7 +105,6 @@ class Nuclei:
   @property
   def shape(self):
     return self.coords.shape
-
 
 def calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2):
   # collect wounded nucleons from both nuclei
@@ -118,7 +132,6 @@ def calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2):
   psi2 = 1/2.0 * (np.arctan2(sin2,cos2) + np.pi) # shift from -pi,pi to 0,2pi
 
   return eps2, psi2
-
 
 if __name__ == "__main__":
   print(nucphys.nucmath.woods_saxon.__doc__)

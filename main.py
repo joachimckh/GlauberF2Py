@@ -11,7 +11,10 @@ from utils import nucphys
 
 @dataclass
 class setup:
-  A: int = 206  # nucleon number
+  A: int = 197 # nucleon number for gold https://arxiv.org/pdf/nucl-ex/0701025
+  a: float = 0.535
+  R: float = 6.38
+  dmin: float = 0.4
   b_array: np.ndarray = field(default_factory=lambda: np.arange(0, 20, .05))
   #b_array: np.ndarray = field(default_factory=lambda: np.arange(0, 20, 0.5))
 
@@ -53,9 +56,9 @@ def main_fortran():
     for _ in range(par.n_events):
       sys.stdout.write(f"\r  Event {_+1}/{par.n_events} for b={b:.1f} fm")
       sys.stdout.flush()
-      nuc1 = Nuclei(par.A)
+      nuc1 = Nuclei(par)
       nuc1.sample_fws()
-      nuc2 = Nuclei(par.A)
+      nuc2 = Nuclei(par)
       nuc2.sample_fws()
       
       nuc1[:,0]-=b/2
@@ -97,9 +100,9 @@ def main_py():
     for _ in range(par.n_events):
       sys.stdout.write(f"\r  Event {_+1}/{par.n_events} for b={b:.1f} fm")
       sys.stdout.flush()
-      nuc1 = Nuclei(par.A)
+      nuc1 = Nuclei(par)
       nuc1.sample_ws()
-      nuc2 = Nuclei(par.A)
+      nuc2 = Nuclei(par)
       nuc2.sample_ws()
       
       nuc1[:,0]-=b/2

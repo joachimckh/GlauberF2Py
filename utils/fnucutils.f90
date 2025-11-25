@@ -21,7 +21,7 @@ subroutine find_collisions(nucleiA, nucleiB, sig_nn, size, part1, part2)
   real :: dx, dy, dz, dist 
   real :: sig_nn_eff
 
-  sig_nn_eff = sig_nn / pi() 
+  sig_nn_eff = sig_nn / pi()
 
   ! part1 = .false.
   ! part2 = .false.

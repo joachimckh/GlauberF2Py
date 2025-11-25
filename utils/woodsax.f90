@@ -7,28 +7,41 @@ real function pi()
   pi = 4.0 * atan(1.0)
 end function pi
 
+subroutine rho(M, K, l, rho0, density)
+  implicit none
+  real, intent(in) :: M, K, l, rho0
+  real, intent(out) :: density
+  density = rho0 / (1.0 + exp((M - K) / l))
+end subroutine rho
+
 subroutine woods_saxon(A, R, d, dmin, coords)
+  ! d = a, diffuseness parameter
   implicit none
   integer, intent(in) :: A
   real, intent(in) :: R, d, dmin
   real, intent(inout) :: coords(A, 3)
   integer :: i, j
-  real :: rr, costh, phi, x, y, z, p, u
+  real :: rr, costh, phi, x, y, z, p, u, sith
   logical :: overlap
+
+  real :: rmax = 15.0
+  real :: fmax = 400.0 ! does fortran have constexpr ? no. for now just hardcode it. this is safe
 
   i = 1
   do while (i <= A)
     call random_number(rr)
-    rr = 15.0 * rr ! 15 fm max radisu
+    rr = rmax * rr ! 15 fm max radisu
     call random_number(costh)
     costh = 2.0 * costh - 1.0 ! [-1, 1]
     call random_number(phi)
     phi = 2.0 * pi() * phi
-    p = 1.0 / (1.0 + exp((rr - R) / d))
+    call rho(rr, R, d, 1.0, p)
+    p = 4 * pi()**2 * rr**2 * p
     call random_number(u)
-    if (u < p) then
-      x = rr * sqrt(1.0 - costh**2) * cos(phi)
-      y = rr * sqrt(1.0 - costh**2) * sin(phi)
+    if (u*fmax < p) then
+      sith = sqrt(1.0 - costh**2)
+      x = rr * sith * cos(phi)
+      y = rr * sith * sin(phi)
       z = rr * costh
       overlap = .false.
       do j = 1, i - 1
@@ -58,7 +71,7 @@ subroutine calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2, A, eps2, psi2)
   real :: cos2, sin2, r2, meanx, meany
   integer :: i, n
 
-  n = sum(wounded1) + sum(wounded2)
+  n = int(sum(wounded1) + sum(wounded2))
   if (n == 0) then
     eps2 = -998.0 
     psi2 = -998.0 

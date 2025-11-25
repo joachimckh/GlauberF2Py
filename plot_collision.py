@@ -10,6 +10,7 @@ from matplotlib.patches import Ellipse
 
 from utils.glauber import sample_woods_saxon, find_collisions, Nuclei, calcPsi2Ecc2
 from utils import nucphys 
+from main import setup
 
 def draw_psi2_plane(ax, psi2, zmin=-25, zmax=25, r=15):
   nx = np.cos(psi2 + np.pi/2)
@@ -27,22 +28,23 @@ def draw_psi2_plane(ax, psi2, zmin=-25, zmax=25, r=15):
   return plane
 
 def collision_plane():
-  np.random.seed(11) # does not matter when using fortran
-  A=206 # nucleon number (
+  np.random.seed(15) # does not matter when using fortran
+  #A=206 # nucleon number (
+  par = setup()
   b=9.0 
-  nuc1 = Nuclei(A)
-  nuc1.sample_fws()
-  nuc2 = Nuclei(A)
-  nuc2.sample_fws()
+  nuc1 = Nuclei(par)
+  nuc1.sample_ws()
+  nuc2 = Nuclei(par)
+  nuc2.sample_ws()
 
   #nuc1[:,1]+=b/4
   nuc2[:,1]+=b/2
   nuc1[:,0]-=b/2
   nuc2[:,0]+=b/2
 
-  wounded1 = np.zeros(A, 'f', order='F') 
-  wounded2 = np.zeros(A, 'f', order='F') 
-  nucphys.nucutils.find_collisions(nuc1.coords,nuc2.coords, 10.0, wounded1, wounded2, A) 
+  wounded1 = np.zeros(par.A, 'f', order='F') 
+  wounded2 = np.zeros(par.A, 'f', order='F') 
+  nucphys.nucutils.find_collisions(nuc1.coords,nuc2.coords, 10.0, wounded1, wounded2, par.A) 
   wounded1 = wounded1.astype(bool)
   wounded2 = wounded2.astype(bool)
   #wounded1, wounded2 = find_collisions(nuc1, nuc2)
@@ -110,12 +112,13 @@ def collision_plane():
   f.savefig('figures/collision.png', dpi=300, bbox_inches='tight')
 
 def col_anim():
-  A=206 # nucleon number (
+  #A=206 # nucleon number (
+  par = setup()
   b=10.0 # impact parameter (change to centrality at some point)
   z0=20.0 # initial z offset
-  nuc1 = Nuclei(A)
+  nuc1 = Nuclei(par)
   nuc1.sample_fws()
-  nuc2 = Nuclei(A)
+  nuc2 = Nuclei(par)
   nuc2.sample_fws()
 
   nuc1[:,0]-=b/2
@@ -133,7 +136,7 @@ def col_anim():
     #nonlocal nuc1, nuc2, collisions, wounded1, wounded2
     nuc1[:,2] -= 0.5
     nuc2[:,2] += 0.5
-    part1, part2 = find_collisions(nuc1, nuc2)
+    part1, part2, bc  = find_collisions(nuc1, nuc2, doBC= True)
 
     p1 = np.asarray(part1)
     p2 = np.asarray(part2)
@@ -160,7 +163,7 @@ def col_anim():
       all_bc = np.vstack(collisions)
       scb._offsets3d = (all_bc[:,0], all_bc[:,1], all_bc[:,2])
 
-    return sc1, sc2, scb
+    return sc1, sc2#, scb
   # draw Psi2 line
   cx = np.mean(np.concatenate([nuc1[wounded1,0], nuc2[wounded2,0]]))
   cy = np.mean(np.concatenate([nuc1[wounded1,1], nuc2[wounded2,1]]))
