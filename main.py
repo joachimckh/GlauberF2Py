@@ -26,7 +26,7 @@ def main_purefort():
   cols = np.zeros((par.n_events,par.b_array.shape[0]), 'f', order='F')
   ecc2 = np.zeros((par.n_events,par.b_array.shape[0]), 'f', order='F')
   psi2 = np.zeros((par.n_events,par.b_array.shape[0]), 'f', order='F')
-  nucphys.simulation.proc(par.b_array, par.A, cols, ecc2, psi2)
+  nucphys.simulation.proc(par.b_array, par.A, cols, psi2, ecc2)
   time1 = time.time()
   print(f"Pure fortran (sim) version took {time1 - time0:.2f} seconds")
 
