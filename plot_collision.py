@@ -45,7 +45,7 @@ def collision_plane():
   nucphys.nucutils.find_collisions(nuc1.coords,nuc2.coords, 10.0, wounded1, wounded2, A) 
   wounded1 = wounded1.astype(bool)
   wounded2 = wounded2.astype(bool)
-  #wounded1, wounded2, _ = find_collisions(nuc1, nuc2)
+  #wounded1, wounded2 = find_collisions(nuc1, nuc2)
   eps2, psi2 = calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2)
 
   f = plt.figure(figsize=(6,6))
@@ -120,7 +120,7 @@ def col_anim():
 
   nuc1[:,0]-=b/2
   nuc2[:,0]+=b/2
-  wounded1, wounded2, _ = find_collisions(nuc1, nuc2)
+  wounded1, wounded2 = find_collisions(nuc1, nuc2)
   eps2, psi2 = calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2)
 
   def init():
@@ -133,7 +133,7 @@ def col_anim():
     #nonlocal nuc1, nuc2, collisions, wounded1, wounded2
     nuc1[:,2] -= 0.5
     nuc2[:,2] += 0.5
-    part1, part2, bc = find_collisions(nuc1, nuc2)
+    part1, part2 = find_collisions(nuc1, nuc2)
 
     p1 = np.asarray(part1)
     p2 = np.asarray(part2)

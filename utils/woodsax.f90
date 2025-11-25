@@ -60,8 +60,8 @@ subroutine calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2, A, eps2, psi2)
 
   n = sum(wounded1) + sum(wounded2)
   if (n == 0) then
-    eps2 = 0.0
-    psi2 = 0.0
+    eps2 = -998.0 
+    psi2 = -998.0 
     return
   end if
 
@@ -101,8 +101,8 @@ subroutine calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2, A, eps2, psi2)
   r2 = sum(w)
 
   if (r2 == 0.0) then
-    eps2 = 0.0
-    psi2 = 0.0
+    eps2 = -999.0 
+    psi2 = -999.0 
     deallocate(P, x, y, r, phi, w)
     return
   end if

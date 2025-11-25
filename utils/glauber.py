@@ -3,6 +3,15 @@ from utils import nucphys
 
 
 def sample_woods_saxon(A, R, a, dmin, V0 = 1.0): # we assume V0 = 1
+  """
+  Sample A nucleon coordinates from a Woods-Saxon distribution
+  A: number of nucleons
+  R: radius parameter
+  a: diffuseness parameter
+  dmin: minimum inter-nucleon distance
+  Returns:
+    numpy array of coordinates of shape (A,3) (x,y,z)
+  """
   coords=[]
   while len(coords)<A:
     rmax = 15.0 # should be enough for all nuclei
@@ -31,13 +40,11 @@ def find_collisions(nuc1,nuc2,sig_nn=10.0):
   Returns:
     part1: boolean array of shape (N1,) indicating which nucleons in nuc1 participated in collisions
     part2: boolean array of shape (N2,) indicating which nucleons in nuc2 participated in collisions
-    bc: array of shape (M,3) with coordinates of binary collisions
-
   """
   rcut = np.sqrt(sig_nn/np.pi)
   part1 = np.zeros(len(nuc1),bool)
   part2 = np.zeros(len(nuc2),bool)
-  bc = []
+  #bc = []
   for i in range(len(nuc1)):
     for j in range(len(nuc2)):
       dx = nuc1[i,0]-nuc2[j,0]
@@ -46,10 +53,10 @@ def find_collisions(nuc1,nuc2,sig_nn=10.0):
       if dx*dx+dy*dy+dz*dz<rcut*rcut:
         part1[i] = True
         part2[j] = True
-        bc.append(((nuc1[i,0]+nuc2[j,0])/2,
-                   (nuc1[i,1]+nuc2[j,1])/2,
-                   (nuc1[i,2]+nuc2[j,2])/2))
-  return part1, part2, np.array(bc)
+        # bc.append(((nuc1[i,0]+nuc2[j,0])/2,
+        #            (nuc1[i,1]+nuc2[j,1])/2,
+        #            (nuc1[i,2]+nuc2[j,2])/2))
+  return part1, part2# , np.array(bc)
 
 
 #Nucleus	Model	<r2>1/2 [fm]	c or a [fm]	z or ? [fm]	w	q-range	reference
@@ -91,7 +98,7 @@ def calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2):
   B = nuc2[wounded2][:, :2]
   P = np.vstack([A, B])
   if P.shape[0] == 0:
-    return 0.0, 0.0
+    return -999.0, -999.0
 
   x = P[:,0] - np.mean(P[:,0])
   y = P[:,1] - np.mean(P[:,1])
@@ -105,10 +112,10 @@ def calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2):
   r2 = np.sum(w)
 
   if r2 == 0:
-    return 0.0, 0.0
+    return -999, -999 
 
   eps2 = np.sqrt(cos2**2 + sin2**2) / r2
-  psi2 = 1/2.0 * (np.arctan2(sin2, cos2) + np.pi)
+  psi2 = 1/2.0 * (np.arctan2(sin2,cos2) + np.pi) # shift from -pi,pi to 0,2pi
 
   return eps2, psi2
 

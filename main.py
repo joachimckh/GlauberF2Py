@@ -13,7 +13,7 @@ from utils import nucphys
 class setup:
   A: int = 206  # nucleon number
   b_array: np.ndarray = field(default_factory=lambda: np.arange(0, 20, .05))
-  #b_array: np.ndarray = field(default_factory=lambda: np.arange(0, 10, 1))
+  #b_array: np.ndarray = field(default_factory=lambda: np.arange(0, 20, 0.5))
 
   n_events: int = 50
   # save_path: str = "glauber_results.npz"
@@ -26,14 +26,14 @@ def main_purefort():
   cols = np.zeros((par.n_events,par.b_array.shape[0]), 'f', order='F')
   ecc2 = np.zeros((par.n_events,par.b_array.shape[0]), 'f', order='F')
   psi2 = np.zeros((par.n_events,par.b_array.shape[0]), 'f', order='F')
-  nucphys.simulation.proc(par.b_array, par.A, cols, psi2, ecc2)
+  nucphys.simulation.proc(par.b_array, par.A, cols, ecc2, psi2)
   time1 = time.time()
   print(f"Pure fortran (sim) version took {time1 - time0:.2f} seconds")
 
   cols = cols.T
   ecc2 = ecc2.T
   psi2 = psi2.T
-  plot_res(par, cols, psi2, ecc2, ftype="purefortran", total_time = time1 - time0)
+  plot_res(par, cols, ecc2, psi2, ftype="purefortran", total_time = time1 - time0)
 
 
 
@@ -67,10 +67,8 @@ def main_fortran():
       wounded1 = wounded1.astype(bool)
       wounded2 = wounded2.astype(bool)
 
-
-      #wounded1, wounded2, bc = find_collisions(nuc1, nuc2)
       bcols.append(np.count_nonzero(wounded1) + np.count_nonzero(wounded2))
-      psi, ecc = calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2)
+      ecc, psi = calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2)
       psi2.append(psi)
       ecc2.append(ecc)
     cols.append(bcols)
@@ -106,9 +104,9 @@ def main_py():
       
       nuc1[:,0]-=b/2
       nuc2[:,0]+=b/2
-      wounded1, wounded2, bc = find_collisions(nuc1, nuc2)
+      wounded1, wounded2 = find_collisions(nuc1, nuc2)
       bcols.append(np.count_nonzero(wounded1) + np.count_nonzero(wounded2))
-      psi, ecc = calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2)
+      ecc, psi = calcPsi2Ecc2(nuc1, nuc2, wounded1, wounded2)
       psi2.append(psi)
       ecc2.append(ecc)
     cols.append(bcols)
