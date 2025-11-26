@@ -18,9 +18,12 @@ def sample_woods_saxon(A, R, a, dmin):
   """
   rmax = 15.0 # same as TGlauber
 
-  # r_grid = np.linspace(0.0, rmax, 1000)
-  # fmax = np.max(sample_f(r_grid, R, a))
-  fmax = 400.0 # precomputed maximum of sample_f for R=6.38, a=0.535, rmax=15.0 - should find a better way to do this
+  
+  # should be fast, since only done once per nucleus and done in numpy
+  r_grid = np.linspace(0.0, rmax, 1000)
+  fmax = np.max(sample_f(r_grid, R, a))
+  # print("fmax",fmax)
+  #fmax = 400.0 # precomputed maximum of sample_f for R=6.38, a=0.535, rmax=15.0 - should find a better way to do this
 
   coords = []
   while len(coords) < A:

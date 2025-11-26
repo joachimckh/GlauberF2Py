@@ -7,10 +7,11 @@ real function pi()
   pi = 4.0 * atan(1.0)
 end function pi
 
-subroutine rho(M, K, l, rho0, density)
+subroutine rho(M, K, l, density) ! r, R, a, ..
   implicit none
-  real, intent(in) :: M, K, l, rho0
+  real, intent(in) :: M, K, l
   real, intent(out) :: density
+  real :: rho0 = 1.0
   density = rho0 / (1.0 + exp((M - K) / l))
 end subroutine rho
 
@@ -25,7 +26,22 @@ subroutine woods_saxon(A, R, d, dmin, coords)
   logical :: overlap
 
   real :: rmax = 15.0
-  real :: fmax = 400.0 ! does fortran have constexpr ? no. for now just hardcode it. this is safe
+  ! real :: fmax = 400.0 ! does fortran have constexpr ? no. for now just hardcode it. this is safe
+  real :: linspace !(0.0, rmax, 1000)
+  real :: fmax_arr(1000)
+  real :: fmax
+  integer :: k
+  do k = 1, 1000
+    linspace = (real(k)-1.0) / 999.0 * rmax
+    ! print *, linspace
+    call rho(linspace, R, d, fmax_arr(k)) 
+    fmax_arr(k) = fmax_arr(k) * 4 * pi() * linspace**2
+    ! print * , fmax_arr(k)
+  end do
+  fmax = maxval(fmax_arr)
+  ! print *, fmax
+  ! ! fmax = 400
+
 
   i = 1
   do while (i <= A)
@@ -35,7 +51,7 @@ subroutine woods_saxon(A, R, d, dmin, coords)
     costh = 2.0 * costh - 1.0 ! [-1, 1]
     call random_number(phi)
     phi = 2.0 * pi() * phi
-    call rho(rr, R, d, 1.0, p)
+    call rho(rr, R, d, p)
     p = 4 * pi()**2 * rr**2 * p
     call random_number(u)
     if (u*fmax < p) then

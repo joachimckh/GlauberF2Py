@@ -33,9 +33,9 @@ def collision_plane():
   par = setup()
   b=9.0 
   nuc1 = Nuclei(par)
-  nuc1.sample_ws()
+  nuc1.sample_fws()
   nuc2 = Nuclei(par)
-  nuc2.sample_ws()
+  nuc2.sample_fws()
 
   #nuc1[:,1]+=b/4
   nuc2[:,1]+=b/2

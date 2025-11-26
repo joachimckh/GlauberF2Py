@@ -49,8 +49,8 @@ There are also a plotting script which produces figures in the "figures" folder:
 python plot_collision.py --v <argument>
 ```
 The argument supported are:
-- "collision": plots a sample collision.
-- "animation": creates an animation of the collision process.
+- "col": plots a sample collision.
+- "anim": creates an animation of the collision process.
 
 
 The results from main.py are also saved as a plot in the "figures" folder, showing some different relevant observables, such as the number of participants as a function of impact parameter, but also the time the program took to run for the different implementations.
@@ -74,9 +74,10 @@ Pure Fortran implementation:
 
 ## Performance
 Reported for a range of b-values (0,20) in 0.05 increment step with 50 events generated per b.
-The pure python code is quite clearly disadvantageous. With a total running time of 902.85 seconds. Just changing the generator to fortran as well as the collision finder, speeds up the program by a factor of ~276, which is not surprising as python struggles where loops are required.
-Going from the part fortran to almost fully implemented fortran code only gains a factor of ~1.2 in gain. This is of course without any parallelization. It is quite clear that the while loop for generating events is the slowest part of the code in python, second is the collision finder. From there on, things can be optimized, but a significant gain in performance is unlikely to be achieved. The interesting part is also that since for the generator we are required to do a while loop, no vectorization can be done, and as such fortran or any other low level language is really required to increase the computational performance. 
+The pure python code is quite clearly disadvantageous. With a total running time of 800 seconds. Just changing the generator to fortran as well as the collision finder, speeds up the program by a factor of ~270, which is not surprising as python struggles where loops are required.
+Going from the part fortran to almost fully implemented fortran code only gains a factor of ~1.3 in gain. This is of course without any parallelization. It is quite clear that the while loop for generating events is the slowest part of the code in python, second is the collision finder. From there on, things can be optimized, but a significant gain in performance is unlikely to be achieved. The interesting part is also that since for the generator we are required to do a while loop, no vectorization can be done, and as such fortran or any other low level language is really required to increase the computational performance. 
 
 ## References
 [1] https://arxiv.org/abs/nucl-ex/0701025 \
 [2] https://tglaubermc.hepforge.org/
+[3] https://arxiv.org/pdf/nucl-ex/0701025
