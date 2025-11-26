@@ -80,4 +80,3 @@ Going from the part fortran to almost fully implemented fortran code only gains 
 ## References
 [1] https://arxiv.org/abs/nucl-ex/0701025 \
 [2] https://tglaubermc.hepforge.org/ \
-[3] https://arxiv.org/pdf/nucl-ex/0701025
